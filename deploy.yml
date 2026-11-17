@@ -1,0 +1,21 @@
+---
+- name: Deploy CI/CD website to server1
+  hosts: webservers
+  become: yes
+
+  tasks:
+    - name: Create website directory
+      file:
+        path: /var/www/site4
+        state: directory
+        owner: nginx
+        group: nginx
+        mode: '0755'
+
+    - name: Depoly website HTML
+      copy:
+        src: index.html
+        dest: /var/www/site4/index.html
+        owner: nginx
+        group: nginx
+        mode: '0644'
