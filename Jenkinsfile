@@ -55,5 +55,18 @@ pipeline {
             }
         }
     }
-}
 
+    post {
+        success {
+            echo 'SUCCESS: CI/CD Pipeline completed successfully!'
+        }
+
+        failure {
+            echo 'FAILURE: CI/CD Pipeline failed. Check the Console Output!'
+        }
+
+        always {
+            echo 'Pipeline execution finished.'
+        }
+    }
+}
