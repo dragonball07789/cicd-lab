@@ -20,7 +20,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Checking website files...'
-                sh 'test -f index.html'
+                sh 'test -f wrongfile.html'
                 echo 'Website file exists. Test passed!'
             }
         }
