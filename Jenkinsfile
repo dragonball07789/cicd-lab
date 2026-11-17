@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -23,5 +24,18 @@ pipeline {
                 echo 'Website file exists. Test passed!'
             }
         }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying website using Ansible...'
+
+                sh '''
+                    ansible-playbook \
+                    -i inventory.ini \
+                    deploy.yml
+                '''
+            }
+        }
     }
 }
+
