@@ -36,6 +36,24 @@ pipeline {
                 '''
             }
         }
+
+        stage('Verify Deployment') {
+            steps {
+                echo 'Verifying deployed website...'
+
+                sh '''
+                    set -eu
+
+                    response=$(curl -fsS http://site4.lab.test)
+
+                    echo "$response"
+
+                    echo "$response" | grep -q '<h1>'
+
+                    echo 'Website verification passed!'
+                '''
+            }
+        }
     }
 }
 
