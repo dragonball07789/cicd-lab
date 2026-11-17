@@ -25,6 +25,18 @@ pipeline {
             }
         }
 
+        stage('Docker Build') {
+            steps {
+                echo 'Building Docker image...'
+
+                sh '''
+                    docker build -t cicd-website:v1 .
+                '''
+
+                echo 'Docker image built successfully!'
+            }
+        }
+
         stage('Deploy') {
             steps {
                 echo 'Deploying website using Ansible...'
