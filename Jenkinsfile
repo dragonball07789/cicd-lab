@@ -95,23 +95,27 @@ pipeline {
             }
         }
 
+        
         stage('Verify Deployment') {
             steps {
-                echo 'Verifying deployed website...'
+                echo 'Verifying both website deployments...'
 
                 sh '''
                     set -eu
 
-                    response=$(curl -fsS http://site4.lab.test)
+                    echo "Checking server1..."
+                    response1=$(curl -fsS http://site4.lab.test)
+                    echo "$response1" | grep -q '<h1>'
+                    echo "server1 website verification passed!"
 
-                    echo "$response"
-
-                    echo "$response" | grep -q '<h1>'
-
-                    echo 'Website verification passed!'
+                    echo "Checking server2 Docker container..."
+                    response2=$(curl -fsS http://192.168.58.11:8081)
+                    echo "$response2" | grep -q '<h1>'
+                    echo "server2 Docker website verification passed!"
                 '''
             }
         }
+
     }
 
     post {
