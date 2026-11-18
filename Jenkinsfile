@@ -80,6 +80,20 @@ pipeline {
                 '''
             }
         }
+        
+        stage('Docker Deploy') {
+            steps {
+                echo 'Deploying Docker container to server2...'
+
+                sh '''
+                    ansible-playbook \
+                    -i inventory.ini \
+                    deploy-docker.yml
+                '''
+
+                echo 'Docker deployment completed!'
+            }
+        }
 
         stage('Verify Deployment') {
             steps {
