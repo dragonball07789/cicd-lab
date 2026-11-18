@@ -36,6 +36,38 @@ pipeline {
                 echo 'Docker image built successfully!'
             }
         }
+        
+        stage('Docker Push') {
+            steps {
+                echo 'Pushing Docker image to Docker Hub...'
+
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKERHUB_USERNAME',
+                    passwordVariable: 'DOCKERHUB_TOKEN'
+                )]) {
+                    sh '''
+                        set +x
+                        set -eu
+
+                        echo "$DOCKERHUB_TOKEN" | docker login \
+                            --username "$DOCKERHUB_USERNAME" \
+                            --password-stdin
+
+                        docker tag cicd-website:v1 \
+                            "$DOCKERHUB_USERNAME/cicd-website:v1"
+
+                        docker push \
+                            "$DOCKERHUB_USERNAME/cicd-website:v1"
+                        
+                        docker logout
+                    
+                    '''
+                }
+
+                echo 'Docker image pushed successfully!'
+            }
+        }
 
         stage('Deploy') {
             steps {
