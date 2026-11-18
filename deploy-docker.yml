@@ -1,0 +1,26 @@
+
+---
+- name: Deploy Docker website to server2
+  hosts: docker_servers
+  become: yes
+
+  tasks:
+    - name: Pull latest website image from Docker Hub
+      community.docker.docker_image:
+        name: dragonball07789/cicd-website
+        tag: v1
+        source: pull
+
+    - name: Stop existing website container
+      community.docker.docker_container:
+        name: cicd-website-container
+        state: absent
+
+    - name: Start updated website container
+      community.docker.docker_container:
+        name: cicd-website-container
+        image: dragonball07789/cicd-website:v1
+        state: started
+        restart_policy: unless-stopped
+        published_ports:
+          - "8081:80"
