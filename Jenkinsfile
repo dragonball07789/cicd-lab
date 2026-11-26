@@ -37,6 +37,46 @@ pipeline {
             }
         }
         
+        stage('ECR Push') {
+            steps {
+                echo 'Pushing Docker image to AWS ECR...'
+
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-ecr-credentials',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
+                    sh '''
+                        set +x
+                        set -eu
+
+                        export AWS_DEFAULT_REGION=ap-southeast-2
+
+                        ECR_REGISTRY=996009836361.dkr.ecr.ap-southeast-2.amazonaws.com
+                        ECR_REPOSITORY=my-nginx-website
+                        ECR_IMAGE="$ECR_REGISTRY/$ECR_REPOSITORY"
+
+                        echo "Logging in to AWS ECR..."
+
+                        aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | \
+                            docker login --username AWS --password-stdin "$ECR_REGISTRY"
+
+                        echo "Tagging Docker image..."
+
+                        docker tag cicd-website:v1 "$ECR_IMAGE:$BUILD_NUMBER"
+
+                        echo "Pushing image to ECR..."
+
+                        docker push "$ECR_IMAGE:$BUILD_NUMBER"
+
+                        docker logout "$ECR_REGISTRY"
+                    '''
+                }
+
+                echo 'Image successfully pushed to AWS ECR!'
+            }
+        }
+
         stage('Docker Push') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
